@@ -1,0 +1,3 @@
+[workspace]
+members = ["divisors", "arithmetics", "primefactors", "primes", "ordered_words", "file_utils"]
+resolver = "2"
