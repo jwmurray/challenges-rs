@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 fn main() {
     println!(
-        "Current workinng directory: {:?}",
+        "Current workingn directory: {:?}",
         std::env::current_dir().unwrap()
     );
     let string_list = read_word_list("unixdict.txt");
