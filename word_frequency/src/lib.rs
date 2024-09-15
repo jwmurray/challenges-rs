@@ -1,6 +1,8 @@
 use std::fs::File;
 use std::io::prelude::*;
 
+// practicing TDD and using a generator iterator pattern rather than reading the whole file into a string.
+
 pub fn get_word_iterator_from_file(
     file_path: &str,
 ) -> Result<impl Iterator<Item = String>, std::io::Error> {
@@ -19,7 +21,7 @@ pub fn get_word_iterator_from_file(
     Ok(words)
 }
 
-fn get_word_frequency(
+pub fn get_word_frequency(
     words: impl Iterator<Item = String>,
 ) -> std::collections::HashMap<String, u32> {
     let mut word_freq = std::collections::HashMap::new();
@@ -30,7 +32,7 @@ fn get_word_frequency(
     word_freq
 }
 
-fn get_sorted_word_frequency(
+pub fn get_sorted_word_frequency(
     word_freq: std::collections::HashMap<String, u32>,
     take: usize,
 ) -> Vec<(String, u32)> {
