@@ -1,0 +1,3 @@
+## Task
+
+Using simulation, estimate the number of independent people required in a group before we can expect a better than even chance that at least 2 independent people in a group share a common birthday. Furthermore: Simulate and thus estimate when we can expect a better than even chance that at least 3, 4 & 5 independent people of the group share a common birthday. For simplicity assume that all of the people are alive...
