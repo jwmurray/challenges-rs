@@ -15,10 +15,10 @@ impl DayNumber {
 }
 
 fn main() {
-    let trials = 20_000;
+    let trials = 100_000;
     let mut start_population_size = 2;
 
-    (2_u16..=5_u16).for_each(|min_common| {
+    for min_common in 2..6 {
         let (min_count_for_50_percent_success, percentage) =
             get_group_size_for_50_percent_success_for_given_common_birthdays(
                 min_common,
@@ -30,74 +30,27 @@ fn main() {
             min_common, min_count_for_50_percent_success, percentage
         );
         start_population_size = min_count_for_50_percent_success;
-    });
+    }
 }
 
 fn get_group_size_for_50_percent_success_for_given_common_birthdays(
     min_common: u16,
-    initial_trials: u32,
+    trials: u32,
     start_population_size: u32,
 ) -> (u32, f32) {
-    let runs = 10;
-    let mut trials = initial_trials;
-    let mut run_vec: Vec<(u32, f32)> = Vec::new();
     let max_population_size = 366;
-    loop {
-        println!(
-            "Loop: Trials: {trials}, shared: {min_common}",
-            trials = trials,
-            min_common = min_common
-        );
-        for _ in 0..runs {
-            let result = (start_population_size..max_population_size)
-                .find_map(|population_size| {
-                    let success_average: f32 = get_estimated_success_for_population_size(
-                        population_size,
-                        min_common,
-                        trials,
-                    );
-                    if success_average >= 0.5 {
-                        Some((population_size, success_average))
-                    } else {
-                        None
-                    }
-                })
-                .unwrap_or((0, 0.0));
-            run_vec.push(result);
-        }
-        let std_dev = get_standard_deviation(&run_vec);
-        println!("Standard deviation: {}", std_dev);
-        if trials > 1_000_000 || std_dev < 0.02 {
-            break;
-        } else {
-            trials *= 5;
-        }
-    }
-    if run_vec.len() > 4 {
-        let count = run_vec[4].0; // get the median value in case the high or the low is off by 1
-        let percentage = run_vec
-            .iter()
-            .map(|(_, percentage)| percentage)
-            .sum::<f32>() as f32
-            / run_vec.len() as f32;
-        (count, percentage)
-    } else {
-        (0, 0.0)
-    }
-}
-
-fn get_standard_deviation(run_vec: &Vec<(u32, f32)>) -> f32 {
-    let mean: f32 = run_vec
-        .iter()
-        .map(|(_, percentage)| percentage)
-        .sum::<f32>()
-        / run_vec.len() as f32;
-    let variance: f32 = run_vec
-        .iter()
-        .map(|(_, percentage)| (percentage - mean).powf(2.0))
-        .sum::<f32>()
-        / run_vec.len() as f32;
-    variance.sqrt()
+    let result = (start_population_size..max_population_size)
+        .find_map(|population_size| {
+            let success_average: f32 =
+                get_estimated_success_for_population_size(population_size, min_common, trials);
+            if success_average >= 0.5 {
+                Some((population_size, success_average))
+            } else {
+                None
+            }
+        })
+        .unwrap_or((0, 0.0));
+    result
 }
 
 fn get_estimated_success_for_population_size(
@@ -117,7 +70,6 @@ fn get_estimated_success_for_population_size(
 
 fn check_if_random_birthdays_have_common_birthday(n: u32, min_common: u16) -> bool {
     // Generate n random birthdays and check if there are at least min_common common birthdays.
-
     let birthdays = generate_population_of_birthdays(n);
     get_max_common_birthday_count(&birthdays) >= min_common as u32
 }
