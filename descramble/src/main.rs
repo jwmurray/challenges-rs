@@ -141,36 +141,6 @@ mod tests {
         let scramble = "cpveteprei";
         let result = get_words_from_scramble(scramble, &dictionary);
         assert_eq!(result, vec!["perceptive", "preceptive"]);
-
-        // Original design used a Vector for the dictionary, which was very slow.  By changing to a HashMap, the performance improved dramatically.
-        // A trie might further improve the lookup performance over the HashMap.  See the increase of lookup time for the last test -- 77.9ms vs 1.8us.
-        //
-        // Further improvements should focus on the generate_grapheme_permutations function, which is the slowest part of the code now.
-        //  to improve the performance of the generate_grapheme_permutations function, we could use a HashSet instead of a Vector to store the permutations.
-        //  Sorting the input seed graphemes would allow us to skip duplicates, which would reduce the number of permutations generated.
-        //
-        //         output:
-        //         running 1 test
-        // test tests::test_get_words_from_scramble ... ok
-
-        // successes:
-
-        // ---- tests::test_get_words_from_scramble stdout ----
-        //         Time to generate permutations for a: 1.958µs
-        //         Time to look up words in the dictionary for a: 750ns, ["a"]
-        //         Time to generate permutations for b: 833ns
-        //         Time to look up words in the dictionary for b: 375ns, []
-        //         Time to generate permutations for abc: 28.875µs
-        //         Time to look up words in the dictionary for abc: 1.791µs, ["cab"]
-        //         Time to generate permutations for eeersn: 4.035ms
-        //         Time to look up words in the dictionary for eeersn: 31.916µs, ["reseen", "resene", "serene"]
-        //         Time to generate permutations for cpveteprei: 30.95946125s
-        //         Time to look up words in the dictionary for cpveteprei: 77.928583ms, ["perceptive", "preceptive"]
-
-        // successes:
-        //     tests::test_get_words_from_scramble
-
-        // test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 31.68s
     }
 
     #[test]

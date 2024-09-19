@@ -1,0 +1,8 @@
+[package]
+name = "words_from_neighbor_ones"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rand = "0.8.5"
+reqwest = { version = "0.12.7", features = ["blocking"] }
