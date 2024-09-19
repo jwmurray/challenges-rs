@@ -1,9 +1,12 @@
 use std::collections::HashMap;
+use std::collections::HashSet;
+use std::result;
 use std::time::Instant;
 use unicode_segmentation::UnicodeSegmentation;
 
 fn main() {
     let scrambles = [
+        "gdein",
         "eeersn",
         "useiohd",
         "edsdnceonc",
@@ -13,39 +16,19 @@ fn main() {
         "earnthorb",
     ];
 
+    let start_read_words = Instant::now();
     let word_list = get_english_words();
+    let duration_read_words = start_read_words.elapsed();
+    println!("Time to read words: {:?}", duration_read_words);
+    let start_dictionary = Instant::now();
     let dictionary: HashMap<String, _> = word_list.iter().map(|s| (s.clone(), true)).collect();
+    let duration_dictionary = start_dictionary.elapsed();
+    println!("Time to create dictionary: {:?}", duration_dictionary);
     for scramble in scrambles {
         println!("Working on scramble: {}", scramble);
         let words = get_words_from_scramble(scramble, &dictionary);
         println!("Scramble: {}, words: {:?}", scramble, words);
     }
-
-    // some notes on graphemes to understand how strings utf-8, chars() and the grapheme trait works.
-    // let hello_str = "Helloy̆, world!";
-    // let y_str = "y̆";
-
-    // let y_graphemes = graphemes_from_str(y_str);
-    // let hello_graphemes = graphemes_from_str(hello_str);
-    // for grapheme in hello_graphemes {
-    //     println!("{}", grapheme);
-    // }
-    // println!(
-    //     "{}, str.len(): {} len: {}, y_graphemes.len(): {}",
-    //     y_str,
-    //     y_str.len(),
-    //     y_str.chars().count(),
-    //     y_graphemes.len()
-    // );
-
-    // for c in y_str.chars() {
-    //     println!("{}", c);
-    // }
-
-    // println!("y_graphemes.len(): {}", y_graphemes.len());
-    // for (i, graph) in y_graphemes.into_iter().enumerate() {
-    //     println!("{i} {graph}");
-    // }
 }
 
 fn graphemes_from_str(s: &str) -> Vec<&str> {
@@ -87,31 +70,44 @@ fn get_english_words() -> Vec<String> {
 }
 
 fn generate_grapheme_permutations(seed: &str) -> Vec<String> {
-    let mut string_dictionary_result: HashMap<String, _> = HashMap::new();
-
+    let mut unique_permutations = HashSet::new();
+    // let mut string_dictionary_result: HashMap<String, _> = HashMap::new();
     let graphemes = graphemes_from_str(seed);
+    let mut sorted_graphemes = graphemes.clone();
+    sorted_graphemes.sort();
 
-    // If str is zero or one grapheme long, then return that grapheme as the result.
-    if graphemes.len() <= 1 {
-        return graphemes.into_iter().map(|s| s.to_string()).collect();
+    generate_permutations_recursive(
+        &sorted_graphemes,
+        &mut String::new(),
+        &mut unique_permutations,
+    );
+
+    let mut result: Vec<String> = unique_permutations.into_iter().collect();
+    result.sort();
+    result
+}
+
+fn generate_permutations_recursive(
+    graphemes: &[&str],
+    current: &mut String,
+    unique_permutations: &mut HashSet<String>,
+) {
+    if graphemes.is_empty() {
+        unique_permutations.insert(current.clone());
+        return;
     }
 
     for i in 0..graphemes.len() {
-        let mut new_seed = graphemes.clone();
-        new_seed.remove(i);
-        let sub_permutations = generate_grapheme_permutations(&new_seed.concat());
-        for sub_permutation in sub_permutations {
-            string_dictionary_result.insert(graphemes[i].to_string() + &sub_permutation, true);
-            // string_vector_result.push(graphemes[i].to_string() + &sub_permutation);
+        if i > 0 && graphemes[i] == graphemes[i - 1] {
+            continue; // Skip duplicates
         }
-    }
 
-    let mut string_vector_result: Vec<String> = string_dictionary_result
-        .keys()
-        .cloned()
-        .collect::<Vec<String>>();
-    string_vector_result.sort();
-    string_vector_result
+        let mut new_graphemes = graphemes.to_vec();
+        let next_char = new_graphemes.remove(i);
+        current.push_str(next_char);
+        generate_permutations_recursive(&new_graphemes, current, unique_permutations);
+        current.truncate(current.len() - next_char.len());
+    }
 }
 
 #[cfg(test)]
