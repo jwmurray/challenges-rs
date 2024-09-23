@@ -1,3 +1,3 @@
 [workspace]
-members = ["birthday_problem", "divisors", "arithmetics", "primefactors", "primes", "ordered_words", "file_utils", "sine_wave", "day_of_the_week", "two_sum", "word_frequency", "descramble", "words_from_neighbor_ones"]
+members = ["birthday_problem", "divisors", "arithmetics", "primefactors", "primes", "ordered_words", "file_utils", "sine_wave", "day_of_the_week", "two_sum", "word_frequency", "descramble", "words_from_neighbor_ones", "factorial"]
 resolver = "2"
